@@ -1,290 +1,75 @@
-{
- "cells": [
-  {
-   "cell_type": "code",
-   "execution_count": 2,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "import urllib.request\n",
-    "from bs4 import BeautifulSoup\n",
-    "import datetime\n",
-    "import pandas as pd"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 40,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "mainUrl = \"https://guidebook.com/guide/166464/list/867382/\"\n",
-    "response = urllib.request.urlopen(mainUrl)\n",
-    "html = response.read()\n",
-    "soup = BeautifulSoup(html, 'html.parser')"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 12,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "links = []\n",
-    "for link in soup.findAll(attrs={'class':'cell-link'}):\n",
-    "    links.append('https://guidebook.com' + link.get('href'))"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 131,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "data = pd.DataFrame({'name': [], 'booth': [], 'link': [], 'note':[], 'description':[]})"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 132,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "for i in links:\n",
-    "#     subUrl = i\n",
-    "    subResponse = urllib.request.urlopen(i)\n",
-    "    subHtml = subResponse.read()\n",
-    "    subSoup = BeautifulSoup(subHtml, 'html.parser')\n",
-    "    name = subSoup.findAll(attrs={'class':'item header'})[0].find('h1').get_text()\n",
-    "    note = subSoup.findAll(attrs={'class':'item header'})[0].find('label').get_text()\n",
-    "    booth = subSoup.findAll(attrs={'class':'header-underbar'})[0].find('span').get_text()\n",
-    "    link = ''\n",
-    "    description = ''\n",
-    "    if subSoup.findAll(attrs={'class':'description'})[0].a:\n",
-    "        link = subSoup.findAll(attrs={'class':'description'})[0].a.get('href')\n",
-    "    if subSoup.findAll(attrs={'class':'description'})[0].p:\n",
-    "        description = subSoup.findAll(attrs={'class':'description'})[0].p.get_text()\n",
-    "    data = data.append({'name': name, 'booth': booth, 'link': link, 'note': note, 'description': description}, \n",
-    "                       ignore_index=True)\n",
-    "\n",
-    "    "
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 134,
-   "metadata": {},
-   "outputs": [
-    {
-     "data": {
-      "text/html": [
-       "<div>\n",
-       "<style scoped>\n",
-       "    .dataframe tbody tr th:only-of-type {\n",
-       "        vertical-align: middle;\n",
-       "    }\n",
-       "\n",
-       "    .dataframe tbody tr th {\n",
-       "        vertical-align: top;\n",
-       "    }\n",
-       "\n",
-       "    .dataframe thead th {\n",
-       "        text-align: right;\n",
-       "    }\n",
-       "</style>\n",
-       "<table border=\"1\" class=\"dataframe\">\n",
-       "  <thead>\n",
-       "    <tr style=\"text-align: right;\">\n",
-       "      <th></th>\n",
-       "      <th>name</th>\n",
-       "      <th>booth</th>\n",
-       "      <th>link</th>\n",
-       "      <th>note</th>\n",
-       "      <th>description</th>\n",
-       "    </tr>\n",
-       "  </thead>\n",
-       "  <tbody>\n",
-       "    <tr>\n",
-       "      <td>0</td>\n",
-       "      <td>2CGaming</td>\n",
-       "      <td>3648</td>\n",
-       "      <td>http://www.2cgaming.com/</td>\n",
-       "      <td></td>\n",
-       "      <td></td>\n",
-       "    </tr>\n",
-       "    <tr>\n",
-       "      <td>1</td>\n",
-       "      <td>9th Level Games</td>\n",
-       "      <td>3423</td>\n",
-       "      <td>http://9thlevel.com/wp/</td>\n",
-       "      <td>Demo table also available in RPG Library (Room...</td>\n",
-       "      <td></td>\n",
-       "    </tr>\n",
-       "    <tr>\n",
-       "      <td>2</td>\n",
-       "      <td>Active Player Network</td>\n",
-       "      <td>3622</td>\n",
-       "      <td>http://activeplayernetwork.com/</td>\n",
-       "      <td></td>\n",
-       "      <td></td>\n",
-       "    </tr>\n",
-       "    <tr>\n",
-       "      <td>3</td>\n",
-       "      <td>Adventure Away</td>\n",
-       "      <td>3500</td>\n",
-       "      <td></td>\n",
-       "      <td></td>\n",
-       "      <td>Adventure Away is the first D&amp;D B&amp;B. This eve...</td>\n",
-       "    </tr>\n",
-       "    <tr>\n",
-       "      <td>4</td>\n",
-       "      <td>AEGIS Combining Robots</td>\n",
-       "      <td>3708</td>\n",
-       "      <td></td>\n",
-       "      <td></td>\n",
-       "      <td></td>\n",
-       "    </tr>\n",
-       "    <tr>\n",
-       "      <td>...</td>\n",
-       "      <td>...</td>\n",
-       "      <td>...</td>\n",
-       "      <td>...</td>\n",
-       "      <td>...</td>\n",
-       "      <td>...</td>\n",
-       "    </tr>\n",
-       "    <tr>\n",
-       "      <td>271</td>\n",
-       "      <td>XYZ Game Labs</td>\n",
-       "      <td>3506</td>\n",
-       "      <td>https://xyzgamelabs.com/</td>\n",
-       "      <td></td>\n",
-       "      <td></td>\n",
-       "    </tr>\n",
-       "    <tr>\n",
-       "      <td>272</td>\n",
-       "      <td>Yanaguana Games</td>\n",
-       "      <td>3502</td>\n",
-       "      <td>http://www.yanaguanagames.com/</td>\n",
-       "      <td></td>\n",
-       "      <td></td>\n",
-       "    </tr>\n",
-       "    <tr>\n",
-       "      <td>273</td>\n",
-       "      <td>Zafty Games</td>\n",
-       "      <td>2931</td>\n",
-       "      <td>http://www.zaftygames.com</td>\n",
-       "      <td></td>\n",
-       "      <td></td>\n",
-       "    </tr>\n",
-       "    <tr>\n",
-       "      <td>274</td>\n",
-       "      <td>Z-Man Games</td>\n",
-       "      <td>2523</td>\n",
-       "      <td>https://www.zmangames.com%0D/</td>\n",
-       "      <td></td>\n",
-       "      <td></td>\n",
-       "    </tr>\n",
-       "    <tr>\n",
-       "      <td>275</td>\n",
-       "      <td>Zulu's Game Cafe</td>\n",
-       "      <td>TT05</td>\n",
-       "      <td>http://www.zulusgames.com/</td>\n",
-       "      <td>First Look Retailer</td>\n",
-       "      <td></td>\n",
-       "    </tr>\n",
-       "  </tbody>\n",
-       "</table>\n",
-       "<p>276 rows × 5 columns</p>\n",
-       "</div>"
-      ],
-      "text/plain": [
-       "                       name booth                             link  \\\n",
-       "0                  2CGaming  3648         http://www.2cgaming.com/   \n",
-       "1           9th Level Games  3423          http://9thlevel.com/wp/   \n",
-       "2     Active Player Network  3622  http://activeplayernetwork.com/   \n",
-       "3            Adventure Away  3500                                    \n",
-       "4    AEGIS Combining Robots  3708                                    \n",
-       "..                      ...   ...                              ...   \n",
-       "271           XYZ Game Labs  3506         https://xyzgamelabs.com/   \n",
-       "272         Yanaguana Games  3502   http://www.yanaguanagames.com/   \n",
-       "273             Zafty Games  2931        http://www.zaftygames.com   \n",
-       "274             Z-Man Games  2523    https://www.zmangames.com%0D/   \n",
-       "275        Zulu's Game Cafe  TT05       http://www.zulusgames.com/   \n",
-       "\n",
-       "                                                  note  \\\n",
-       "0                                                        \n",
-       "1    Demo table also available in RPG Library (Room...   \n",
-       "2                                                        \n",
-       "3                                                        \n",
-       "4                                                        \n",
-       "..                                                 ...   \n",
-       "271                                                      \n",
-       "272                                                      \n",
-       "273                                                      \n",
-       "274                                                      \n",
-       "275                                First Look Retailer   \n",
-       "\n",
-       "                                           description  \n",
-       "0                                                       \n",
-       "1                                                       \n",
-       "2                                                       \n",
-       "3     Adventure Away is the first D&D B&B. This eve...  \n",
-       "4                                                       \n",
-       "..                                                 ...  \n",
-       "271                                                     \n",
-       "272                                                     \n",
-       "273                                                     \n",
-       "274                                                     \n",
-       "275                                                     \n",
-       "\n",
-       "[276 rows x 5 columns]"
-      ]
-     },
-     "execution_count": 134,
-     "metadata": {},
-     "output_type": "execute_result"
-    }
-   ],
-   "source": [
-    "data"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": 135,
-   "metadata": {},
-   "outputs": [],
-   "source": [
-    "data.to_csv(\"pax_unplugged_2019_exhibitors.csv\")"
-   ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "metadata": {},
-   "outputs": [],
-   "source": []
-  }
- ],
- "metadata": {
-  "kernelspec": {
-   "display_name": "Python 3",
-   "language": "python",
-   "name": "python3"
-  },
-  "language_info": {
-   "codemirror_mode": {
-    "name": "ipython",
-    "version": 3
-   },
-   "file_extension": ".py",
-   "mimetype": "text/x-python",
-   "name": "python",
-   "nbconvert_exporter": "python",
-   "pygments_lexer": "ipython3",
-   "version": "3.7.4"
-  }
- },
- "nbformat": 4,
- "nbformat_minor": 2
-}
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[2]:
+
+
+import urllib.request
+from bs4 import BeautifulSoup
+import datetime
+import pandas as pd
+
+
+# In[40]:
+
+
+mainUrl = "https://guidebook.com/guide/166464/list/867382/"
+response = urllib.request.urlopen(mainUrl)
+html = response.read()
+soup = BeautifulSoup(html, 'html.parser')
+
+
+# In[12]:
+
+
+links = []
+for link in soup.findAll(attrs={'class':'cell-link'}):
+    links.append('https://guidebook.com' + link.get('href'))
+
+
+# In[131]:
+
+
+data = pd.DataFrame({'name': [], 'booth': [], 'link': [], 'note':[], 'description':[]})
+
+
+# In[132]:
+
+
+for i in links:
+#     subUrl = i
+    subResponse = urllib.request.urlopen(i)
+    subHtml = subResponse.read()
+    subSoup = BeautifulSoup(subHtml, 'html.parser')
+    name = subSoup.findAll(attrs={'class':'item header'})[0].find('h1').get_text()
+    note = subSoup.findAll(attrs={'class':'item header'})[0].find('label').get_text()
+    booth = subSoup.findAll(attrs={'class':'header-underbar'})[0].find('span').get_text()
+    link = ''
+    description = ''
+    if subSoup.findAll(attrs={'class':'description'})[0].a:
+        link = subSoup.findAll(attrs={'class':'description'})[0].a.get('href')
+    if subSoup.findAll(attrs={'class':'description'})[0].p:
+        description = subSoup.findAll(attrs={'class':'description'})[0].p.get_text()
+    data = data.append({'name': name, 'booth': booth, 'link': link, 'note': note, 'description': description}, 
+                       ignore_index=True)
+
+    
+
+
+# In[134]:
+
+
+data
+
+
+# In[135]:
+
+
+data.to_csv("pax_unplugged_2019_exhibitors.csv")
+
+
+# In[ ]:
+
+
+
+
